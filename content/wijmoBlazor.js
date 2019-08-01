@@ -277,29 +277,30 @@ wb.marshallIn = function (name, val) {
     }
 
     // convert strings into dates
-    if (wijmo.isArray(val)) {
-        val.forEach(item => {
-            for (let key in item) {
-                let val = item[key];
-                if (wijmo.isString(val) && val.match(this.rxDate)) {
-                    item[key] = this.marshallIn(val);
-                }
-            }
-        });
-    }
-
-    // convert strings into dates
     if (wijmo.isString(val) && val.match(this.rxDate)) {
         val = new Date(val);
 
         // convert GMT to local
         var local = new Date(val.getTime() + val.getTimezoneOffset() * 60000);
-        console.log('convert GMT to local', val, '=>', local);
+        //console.log('convert GMT to local', val, '=>', local);
         val = local;
+    }
+
+    // convert strings into dates within arrays
+    if (wijmo.isArray(val)) {
+        val.forEach(item => {
+            for (let key in item) {
+                let val = item[key];
+                if (wijmo.isString(val) && val.match(this.rxDate)) {
+                    item[key] = this.marshallIn(key, val);
+                }
+            }
+        });
     }
 
     // done
     return val;
+
 }.bind(wb);
 
 // create serializable objects to send to Blazor via interop
@@ -311,7 +312,7 @@ wb.marshallOut = function (val) {
     // convert local to GMT
     if (val instanceof Date) {
         var gmt = new Date(val.getTime() - val.getTimezoneOffset() * 60000);
-        console.log('convert local to GMT', val, '=>', gmt);
+        //console.log('convert local to GMT', val, '=>', gmt);
         return gmt;
     }
 
