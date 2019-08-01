@@ -26,8 +26,9 @@ For example, this is how you would add a **FlexGrid** to a
     </WJ.FlexGrid>
 ```
 
-This [sample](https://wijmoblazor.firebaseapp.com) shows all the controls 
-in **WijmoBlazor**.
+The [BlazorClient sample](https://wijmoblazor.firebaseapp.com) shows all the 
+controls in **WijmoBlazor**. The source for the sample can be found in the
+**BlazorClient** folder in this repository.
 
 The **WijmoBlazor** library shows how you can use Blazor's
 [JavaScript Interop](https://docs.microsoft.com/en-us/aspnet/core/blazor/javascript-interop?view=aspnetcore-3.0)
