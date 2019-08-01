@@ -4,12 +4,15 @@ Wijmo 5 components for Blazor (grid, chart, gauge, inputs).
 [Blazor](https://docs.microsoft.com/en-us/aspnet/core/blazor)
 is Microsoft's framework for building interactive client
 side web UI with .NET. It uses WebAssembly to run .NET code on the
-client so you can develop in C# instead of JavaScript/TypeScript.
+client so you can create great web apps using C# instead of
+JavaScript/TypeScript.
 
 **WijmoBlazor** is a library that wraps several
-[Wijmo](https://www.grapecity.com/wijmo) controls as regular 
-**Blazor** components. For example, this is how you would create 
-a **FlexGrid** in a **Blazor** page:
+[Wijmo](https://www.grapecity.com/wijmo) controls and exposes
+them as **Blazor** components.
+
+For example, this is how you would add a **FlexGrid** to a 
+**Blazor** page:
 
 ```html
     <WJ.FlexGrid
@@ -32,6 +35,7 @@ to connect C# code to JavaScript libraries such as **Wijmo**.
 
 **Blazor** has not been officially released yet, so at this point **WijmoBlazor**
 is a technology preview/sample.
-When **Blazor** ships, we expect to include it **WijmoBlazor** in the **Wijmo**
-package as an extra interop (along with **React**, **Vue**, and **Angular**).
+
+When **Blazor** ships, we expect to include it in the **Wijmo** package as an
+extra interop (along with **React**, **Vue**, and **Angular**).
 
