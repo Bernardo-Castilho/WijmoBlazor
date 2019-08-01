@@ -1,0 +1,74 @@
+﻿@page "/gauge"
+@inject HttpClient Http
+
+<h1>
+    Wijmo Gauges
+</h1>
+
+<p>
+    Wijmo <b>RadialGauge</b> controls can be used to create
+    dashboard-style applications. You can customize the 
+    appearance of the gauges by setting some properties and
+    by adding <b>Range</b> components to it.
+</p>
+<p>
+    Set the gauge's <b>IsReadOnly</b> property to false if
+    you want users to be able to change the gauge value with
+    the mouse, touch, or keyboard.
+</p>
+
+
+<div class="row">
+    <div class="col-md-6">
+        <WJ.RadialGauge
+            StartAngle="-45"
+            SweepAngle="270"
+            Min="0"
+            Max="100"
+            Step="5"
+            Value="@value"
+            IsReadOnly="false"
+            ShowRanges="@showRanges"
+            TickSpacing="10"
+            ShowTicks="true"
+            ShowTickText="true"
+            ValueChanged="@ValueChanged">
+            <WJ.Pointer Thickness="0.2" Color="Black" />
+            <WJ.Range Name="low" Min="0" Max="25" Color="rgba(255,0,0,.4)" />
+            <WJ.Range Name="med" Min="25" Max="50" Color="rgba(255,255,0,.4)" />
+            <WJ.Range Name="high" Min="50" Max="75" Color="rgba(255,125,0,.4)" />
+            <WJ.Range Name="top" Min="75" Max="100" Color="rgba(0,255,0,.4)" />
+        </WJ.RadialGauge>
+        <label>
+            Show Ranges
+            <input type="checkbox" @bind="@showRanges"/>
+        </label>
+    </div>
+    <div class="col-md-6">
+        <WJ.RadialGauge
+            StartAngle="-45"
+            SweepAngle="270"
+            Value="0"
+            ShowText="WJ.ShowText.MinMax"
+            StackRanges="@stackedRanges">
+            <WJ.Range Max="@(value - 10)" Color="Red" />
+            <WJ.Range Max="@value" Color="Purple" />
+            <WJ.Range Max="@(value - 10)" Color="Orange" />
+        </WJ.RadialGauge>
+        <label>
+            Stacked Ranges
+            <input type="checkbox" @bind="@stackedRanges"/>
+        </label>
+    </div>
+</div>
+@code {
+    bool showRanges = true;
+    bool stackedRanges = true;
+    int value = 75;
+
+    private void ValueChanged(WJ.Gauge sender)
+    {
+        value = (int)sender.Value;
+        StateHasChanged(); // REVIEW: deepprop should update the gauge here...
+   }
+}

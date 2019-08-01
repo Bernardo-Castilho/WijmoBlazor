@@ -1,0 +1,255 @@
+﻿@import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
+
+html, body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+app {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.top-row {
+    z-index: 1;
+    height: 3.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.main {
+    flex: 1;
+}
+
+    .main .top-row {
+        background-color: #e6e6e6;
+        border-bottom: 1px solid #d6d5d5;
+    }
+
+.sidebar {
+    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+}
+
+    .sidebar .top-row {
+        background-color: rgba(0,0,0,0.4);
+    }
+
+    .sidebar .navbar-brand {
+        font-size: 1.1rem;
+    }
+
+    .sidebar .oi {
+        width: 2rem;
+        font-size: 1.1rem;
+        vertical-align: text-top;
+        top: -2px;
+    }
+
+.nav-item {
+    font-size: 0.9rem;
+    padding-bottom: 0.5rem;
+}
+
+    .nav-item:first-of-type {
+        padding-top: 1rem;
+    }
+
+    .nav-item:last-of-type {
+        padding-bottom: 1rem;
+    }
+
+    .nav-item a {
+        color: #d7d7d7;
+        border-radius: 4px;
+        height: 3rem;
+        display: flex;
+        align-items: center;
+        line-height: 3rem;
+    }
+
+        .nav-item a.active {
+            background-color: rgba(255,255,255,0.25);
+            color: white;
+        }
+
+        .nav-item a:hover {
+            background-color: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+.content {
+    padding-top: 1.1rem;
+}
+
+.navbar-toggler {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.valid.modified:not([type=checkbox]) {
+    outline: 1px solid #26b050;
+}
+
+.invalid {
+    outline: 1px solid red;
+}
+
+.validation-message {
+    color: red;
+}
+
+@media (max-width: 767.98px) {
+    .main .top-row {
+        display: none;
+    }
+}
+
+@media (min-width: 768px) {
+    app {
+        flex-direction: row;
+    }
+
+    .sidebar {
+        width: 250px;
+        height: 100vh;
+        position: sticky;
+        top: 0;
+    }
+
+    .main .top-row {
+        position: sticky;
+        top: 0;
+    }
+
+    .main > div {
+        padding-left: 2rem !important;
+        padding-right: 1.5rem !important;
+    }
+
+    .navbar-toggler {
+        display: none;
+    }
+
+    .sidebar .collapse {
+        /* Never collapse the sidebar for wide screens */
+        display: block;
+    }
+}
+
+.options label {
+    margin-right: 2em;
+}
+
+.wj-listbox {
+    max-height: 200px;
+}
+.wj-calendar {
+    width: 30em;
+}
+.wj-radialgauge {
+    height: 200px;
+    display: inline-block;
+    margin: 2em 0;
+}
+    .wj-radialgauge .wj-needle {
+        fill: orangered;
+        stroke: orangered;
+    }
+    .wj-radialgauge .wj-value {
+        font-size: 150%;
+        transform: translateY(.1em);
+    }
+
+
+.wj-lineargauge {
+    width: 400px;
+    display: inline-block;
+}
+
+.wj-gauge .wj-value {
+    transform: translateY(.1em);
+}
+
+.counter.wj-gauge .wj-value {
+    fill: white;
+}
+
+/* bar containing the menus */
+.menubar {
+    position: sticky;
+    display: flex;
+    background: #e4f0ff;
+    padding: 12px;
+    top: 0;
+}
+
+.wj-menu {
+    padding: 6px 14px;
+    border: none;
+    background: transparent;
+}
+
+    .wj-menu:hover,
+    .wj-menu.wj-state-focused {
+        background: rgba(0, 0, 0, .05);
+    }
+
+    .wj-menu .wj-input-group .wj-input-group-btn {
+        /* hide the menu's drop-down buttons */
+        display: none;
+    }
+
+.wj-listbox.wj-menu-items {
+    min-width: 8em;
+    border: none;
+    background: #e4f0ff;
+}
+
+    .wj-listbox.wj-menu-items .wj-listbox-item:not(.wj-separator) {
+        padding: 6px 12px;
+    }
+
+.wj-flexgrid {
+    max-height: 300px;
+}
+
+.wj-cell.cell-country {
+    background: #fef68c
+}
+
+.wj-flexchart g.wj-series-group ellipse {
+    fill: gold;
+    stroke: orange;
+    opacity: .5
+}
+
+    .wj-flexchart g.wj-series-group ellipse:hover {
+        fill: orange;
+        opacity: 1;
+    }
+
+.wj-tooltip {
+    padding: 18px;
+    background: black;
+    color: white;
+    font-size: 120%;
+}
+
+.gallery {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 2em;
+}
+    .gallery > .wj-control:not(.wj-calendar) {
+        width: 14em;
+    }
+    .gallery > * {
+        margin-right: 2em;
+        margin-bottom: 12px;
+    }
+
+.dialog {
+    min-width: 350px;
+}
+    .dialog label {
+        display: block;
+    }

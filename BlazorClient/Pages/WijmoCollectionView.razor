@@ -1,0 +1,88 @@
+﻿@page "/collectionview"
+@inject HttpClient Http
+
+<h1>
+    Wijmo CollectionView
+</h1>
+
+<p>
+    This page shows how you can create a <b>CollectionView</b>
+    using markup and then use it as a data source for multiple
+    components (in this case a <b>FlexGrid</b> and a
+    <b>FlexChart</b>.
+</p>
+<p>
+    If you sort, filter, or edit the grid, the changes are 
+    applied to the common <b>CollectionView</b> and the chart
+    is updated automatically.
+</p>
+
+<WJ.CollectionView @ref="@view"
+    SourceCollection="@countries"
+    PageSize="20"
+    CurrentChanged="@currentChanged" />
+
+<div class="row">
+    <div class="col-md-6">
+        <WJ.FlexGrid 
+            ItemsSource="@view"
+            SelectionMode="WJ.SelectionMode.ListBox"
+            HeadersVisibility="WJ.HeadersVisibility.Column">
+            <WJ.FlexGridFilter />
+            <WJ.Column Binding="country" Header="Country" Width="@("1.5*")" />
+            <WJ.Column Binding="popK" Header="Pop. (k)" Width="@("*")" />
+            <WJ.Column Binding="gdpB" Header="GDP ($billions)" Format="n0" Width="@("*")" />
+            <WJ.Column Binding="pci" Header="PCI ($/year/person)" Format="n0" Width="@("*")" />
+        </WJ.FlexGrid>
+    </div>
+    <div class="col-md-6">
+        <WJ.FlexChart ItemsSource="@view" BindingX="country">
+            <WJ.Legend Position="WJ.Position.Bottom" />
+            <WJ.Series Binding="popK" Name="Pop (k)" />
+            <WJ.Series Binding="gdpB" Name="GDP ($billions)" />
+            <WJ.Series Binding="pci" Name="PCI ($/year/person)" />
+        </WJ.FlexChart>
+    </div>
+</div>
+
+<p>
+    The <b>CollectionView</b> in this example is paged.
+    You can navigate through the pages in code or using a
+    <b>CollectionViewNavigator</b> component:
+</p>
+<p>
+    <WJ.CollectionViewNavigator
+        HeaderFormat="Page {current:n0} of {count:n0}"
+        View="@view" 
+        ByPage="true"/>
+</p>
+
+@code {
+        WJ.CollectionView view; // shared CollectionView
+        CountryData[] countries; // raw data source
+
+        string[] groupDesc = new string[]
+        {
+        "country"
+        };
+
+    protected override async Task OnInitAsync()
+    {
+        countries = await Http.GetJsonAsync<CountryData[]>("sample-data/countries.json");
+    }
+
+    class CountryData
+    {
+        public string Country { get; set; }
+        public double Pop { get; set; }
+        public int PopK { get => (int)Pop / 1000; } // pop in thousands
+        public double Gdp { get; set; } // in millions
+        public double GdpB { get => (int)Gdp / 1000; } // GDP in billions
+        public double Pci { get => Gdp / Pop * 1e6; } // US$/year/capita
+    }
+
+    void currentChanged(WJ.CollectionView sender)
+    {
+        Console.WriteLine("current changed: {0}: {1}", sender.CurrentPosition, sender.CurrentItem);
+    }
+}

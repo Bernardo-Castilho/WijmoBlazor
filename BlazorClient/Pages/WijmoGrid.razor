@@ -1,0 +1,219 @@
+﻿@page "/grid"
+@inject HttpClient Http
+@inject IJSRuntime JSRuntime
+@using System.Threading
+@using System.Text.Json
+
+<h1>
+    Wijmo FlexGrid
+</h1>
+<p>
+    This FlexGrid is bound to a collection with <b>@data.Count</b> items.
+</p>
+<p>
+    You may edit cells, copy and paste ranges, sort, drag and resize
+    columns, and export the current selection or the whole grid to a
+    CSV file.
+</p>
+<p>
+    Try selecting multiple ranges by ctrl+click/dragging the mouse and 
+    see how the component displays Excel-style aggregate values below
+    the grid.
+</p>
+<div class="options">
+    <label>
+        <input type="checkbox" @bind="@showID" />
+        Show ID column
+    </label>
+    <label>
+        <input type="checkbox" @bind="@useCurrencyFormat" />
+        Use Currency Formats
+    </label>
+    <label>
+        <input type="checkbox" @bind="@useCustomStyle" />
+        Use Custom Style
+    </label>
+</div>
+
+<WJ.GroupPanel
+    Placeholder = "Drag Columns Here to Create Groups"
+    Grid="@grid" />
+
+<WJ.FlexGrid @ref="grid"
+    IsReadOnly="false"
+    ImeEnabled="true"
+    HeadersVisibility="WJ.HeadersVisibility.Column"
+    SelectionMode="WJ.SelectionMode.MultiRange"
+    SelectionChanged="@SelectionChanged"
+    ItemsSource="@data">
+    <WJ.FlexGridFilter FilterApplied="@FilterApplied"/>
+    <WJ.Column Binding="id" Header="#" IsReadOnly="true" Visible="@showID" />
+    <WJ.Column Binding="product" Header="Product" MaxLength="8" DataMap="@products" />
+    <WJ.Column Binding="country" Header="Country" DataMap="@countries" CssClass="@customCssClass" />
+    <WJ.Column Binding="active" Header="Active" />
+    <WJ.Column Binding="downloads" Header="Downloads" Format="n0" />
+    <WJ.Column Binding="sales" Header="Sales" Format="@currencyFormat"/>
+    <WJ.Column Binding="expenses" Header="Expenses" Format="@currencyFormat" />
+</WJ.FlexGrid>
+<pre>@aggMsg</pre>
+<p>
+    Export to CSV:
+    <button class="btn btn-primary" @onclick="@(e => Export(e, false))">
+        Selection
+    </button>
+    <button class="btn btn-primary" @onclick="@(e => Export(e, true))">
+        Whole Grid
+    </button>
+</p>
+
+@code {
+    WJ.FlexGrid grid;
+    List<DataItem> data = new List<DataItem>();
+    string[] products = "Gadgets,Doohickeys,Doodads,Sprockets".Split(',');
+    string[] countries = "US,Germany,UK,Japan,Italy,Greece".Split(',');
+
+    string aggMsg = "Ready";
+    Timer _timer;
+
+    bool showID = true;
+
+    bool useCurrencyFormat = true;
+    string currencyFormat
+    {
+        get => useCurrencyFormat ? "c2" : "n2";
+    }
+
+    bool useCustomStyle = true;
+    string customCssClass
+    {
+        get => useCustomStyle ? "cell-country" : "";
+    }
+
+    void FilterApplied(WJ.FlexGridFilter sender)
+    {
+        Console.WriteLine("Filter Applied...");
+    }
+    void Export(UIMouseEventArgs e, bool wholeGrid)
+    {
+        WJ.CellRange rng = null;
+        if (wholeGrid)
+        {
+            rng = new WJ.CellRange()
+            {
+                Row = 0,
+                Col = 0,
+                Row2 = data.Count - 1, //grid.Rows.length - 1,
+                Col2 = 6 //grid.Columns.length - 1);
+            };
+        }
+        string csv = grid.GetClipString(rng, true, true);
+        ExportCSV(csv, wholeGrid ? "FlexGrid.csv" : "Selection.csv");
+    }
+    void ExportCSV(string content, string fileName)
+    {
+        ((IJSInProcessRuntime)JSRuntime).Invoke<int>("interop.exportCSV", content, fileName);
+    }
+
+    void SelectionChanging(WJ.FlexGrid grid, WJ.CellRangeEventArgs args)
+    {
+        args.Cancel = args.Row > 3; //// prevent selection of anything below row 3
+    }
+    void SelectionChanged(WJ.FlexGrid grid, WJ.CellRangeEventArgs args)
+    {
+        Console.WriteLine("SelectionChanged Fired, range is {0} and selection is {1}", args.Range, grid.Selection);
+
+        // use a timer to debounce the SelectionChanged event handler:
+        // we update aggregates 600ms after the last SelectionChanged event.
+        if (_timer == null)
+        {
+            _timer = new Timer(new TimerCallback((_) => UpdateAggregates()));
+        }
+        _timer.Change(600, Timeout.Infinite);
+    }
+    void UpdateAggregates()
+    {
+        int cnt = 0;
+        int cntAll = 0;
+        double sum = 0;
+        var cells = new Dictionary<string, bool>();
+        foreach (WJ.CellRange rng in grid.SelectedRanges)
+        {
+            //Console.WriteLine("    {0}: {1}", ++index, rng);
+            for (var r = rng.TopRow; r <= rng.BottomRow; r++)
+            {
+                for (var c = rng.LeftCol; c <= rng.RightCol; c++)
+                {
+                    var key = string.Format("{0},{1}", r, c);
+                    if (!cells.ContainsKey(key)) // avoid double-counting cells
+                    {
+                        cells.Add(key, true);
+                        var val = (JsonElement)grid.GetCellData(r, c, false);
+                        if (val.ValueKind == JsonValueKind.Number)
+                        {
+                            cnt++;
+                            sum += val.GetDouble();
+                        }
+                        if (val.ToString().Length > 0)
+                        {
+                            cntAll++;
+                        }
+                        //Console.WriteLine("{0},{1}: {2} ({3})", r, c, val, val.Type);
+                    }
+                }
+            }
+        }
+
+        // update aggregate message
+        // REVIEW: binding only textContent, Blazor can't bind to HTML...
+        var msg = "Ready";
+        if (cnt > 1) {
+            msg = string.Format("Count: {0:n0}   Average: {1:#,##0.####}   Sum: {2:#,##0.####}", cnt, sum / cnt, sum);
+        }
+        else if (cntAll > 1)
+        {
+            msg = string.Format("Count: {0:n0}", cntAll);
+        }
+
+        if (aggMsg != msg)
+        {
+            aggMsg = msg;
+            StateHasChanged();
+        }
+    }
+
+    protected override void OnInit()
+    {
+        var rnd = new Random();
+        for (var i = 0; i < 200; i++)
+        {
+            data.Add(new DataItem()
+            {
+                ID = i,
+                Country = countries[rnd.Next(countries.Length - 1)],
+                Product = products[rnd.Next(products.Length - 1)],
+                Active = i % 5 == 0,
+                Downloads = rnd.Next(200000),
+                Sales = rnd.NextDouble() * 100000,
+                Expenses = rnd.NextDouble() * 50000
+            });
+        }
+
+        // REVIEW: this is required to make the GroupPanel recognize the Grid property.
+        // There must be a cleaner way to handle this...
+        Task.Run(async () => {
+            await Task.Delay(50);
+            this.StateHasChanged();
+        });
+    }
+
+    class DataItem
+    {
+        public int ID { get; set; }
+        public string Product { get; set; }
+        public string Country { get; set; }
+        public bool Active { get; set; }
+        public int Downloads { get; set; }
+        public double Sales { get; set; }
+        public double Expenses { get; set; }
+    }
+}

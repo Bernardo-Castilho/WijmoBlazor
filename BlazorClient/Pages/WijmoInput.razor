@@ -1,0 +1,296 @@
+﻿@page "/input"
+@inject HttpClient Http
+
+<h1>
+    Wijmo Input
+</h1>
+
+<p>
+    This page shows several Wijmo input controls. 
+    The input controls are used to edit data as strings, 
+    numbers, dates, times, colors, lists, and popups.
+</p>
+
+<h2>
+    Strings and Objects
+</h2>
+<p>
+    Wijmo controls used for entering strings and selecting items
+    include <b>ComboBox</b>, <b>AutoComplete</b>, <b>MultiSelect</b>,
+    <b>InputMask</b>.
+    All of them support touch and are accessible and localizable.
+</p>
+<div class="gallery">
+    <WJ.ComboBox ItemsSource="@countries" DisplayMemberPath="country" IsEditable="true" >
+        <WJ.Tooltip ShowDelay="1000">
+            The <b>ComboBox</b> control allows users to pick from a list
+            of strings or objects. It has auto-search and allows you to 
+            control whether input is restricted to the items on the list
+            or not.
+        </WJ.Tooltip>
+    </WJ.ComboBox>
+    <WJ.AutoComplete ItemsSource="@countries" DisplayMemberPath="country" >
+        <WJ.Tooltip>
+            The <b>AutoComplete</b> control shows a list of matching items
+            as the user types. It is ideal for situations where the lists
+            are very long (hundreds or thousands of items).
+        </WJ.Tooltip>
+    </WJ.AutoComplete>
+    <WJ.MultiSelect ItemsSource="@countries" DisplayMemberPath="country" 
+        CheckedMemberPath="checked" 
+        HeaderFormat="{count:n0} countries selected"
+        Placeholder="Select countries">
+        <WJ.Tooltip>
+            The <b>MultiSelect</b> control allows users to pick multiple items
+            from a drop-down list.
+        </WJ.Tooltip>
+    </WJ.MultiSelect>
+    <WJ.InputMask Mask="AA-9999" Placeholder="@mask" IsRequired="false" Value="">
+        <WJ.Tooltip>
+            The <b>InputMask</b> control uses a "mask string" to enforce 
+            patterns as the user types. This one's mask is "@mask".
+        </WJ.Tooltip>
+    </WJ.InputMask>
+</div>
+
+<h2>
+    Dates and Times
+</h2>
+<p>
+    Wijmo controls used for entering dates and times include 
+    <b>InputDate</b>, <b>InputTime</b>, <b>InputDateTime</b>,
+    and <b>Calendar</b>.
+    All of them support touch and are accessible and localizable.
+</p>
+<p>
+    Notice how all the controls below are all bound to the same 
+    variable. You can use an <b>InputDate</b> or <b>Calendar</b>
+    to edit the date part of the value and an <b>InputTime</b> 
+    to edit the time part, or an <b>InputDateTime</b> to edit 
+    both.
+</p>
+<div class="gallery">
+    <WJ.InputDate Value="@theDate" ValueChanged="@DateChanged">
+        <WJ.Tooltip>
+            The <b>InputDate</b> control allows users to select a
+            date. You can restrict the valid range and prevent
+            certain dates from being selected.
+        </WJ.Tooltip>
+    </WJ.InputDate>
+    <WJ.InputTime Value="@theDate" IsEditable="true" ValueChanged="@DateChanged">
+        <WJ.Tooltip>
+            The <b>InputTime</b> control allows users to select a
+            time. You can select the range and steps used to populate
+            the drop-down list.
+        </WJ.Tooltip>
+    </WJ.InputTime>
+    <WJ.InputDateTime Value="@theDate" ValueChanged="@DateChanged">
+        <WJ.Tooltip>
+            The <b>InputDateTime</b> control allows users to select a
+            date/time value. It combines the <b>InputDate</b> and
+            <b>InputTime</b> controls into one.
+        </WJ.Tooltip>
+    </WJ.InputDateTime>
+    <WJ.Calendar Value="@theDate" ValueChanged="@DateChanged">
+        <WJ.Tooltip>
+            The <b>Calendar</b> control can be used independently
+            of the <b>InputDate</b> control.
+        </WJ.Tooltip>
+    </WJ.Calendar>
+    <div>
+        The current date/time is<br/>
+        <b>@theDate.ToString("f")</b>.
+    </div>
+</div>
+
+<h2>
+    Numbers
+</h2>
+<p>
+    Wijmo controls used for entering numbers include the
+    <b>InputNumber</b>, <b>LinearGauge</b>, and 
+    <b>RadialGauge</b>.
+    <b>InputNumber</b> is the most commonly used.
+</p>
+<div class="gallery">
+    <WJ.InputNumber Step="1" Format="n2" >
+        <WJ.Tooltip>
+            The <b>InputNumber</b> control allows users to enter
+            formatted numeric values and prevents invalid input.
+        </WJ.Tooltip>
+    </WJ.InputNumber>
+    <WJ.InputNumber Step="1" Format="n2" Min="0" Max="100">
+        <WJ.Tooltip>
+            Use the "Min" and "Max" properties to specify the valid 
+            range of values for the <b>InputNumber</b> control.
+        </WJ.Tooltip>
+    </WJ.InputNumber>
+</div>
+
+<h2>
+    Menus
+</h2>
+<p>
+    Wijmo menus support hierarchical commands. You can decide
+    whether they should open and close when the user clicks
+    the mouse or on mouse hover.
+</p>
+<div class="gallery">
+    <div class="menubar">
+        <WJ.Menu
+            Header="File"
+            DisplayMemberPath="header"
+            SubItemsPath="items"
+            OpenOnHover="true"
+            IsAnimated="true"
+            ItemsSource="@menuData.FileMenu"
+            ItemClicked="@MenuItemClicked"/>
+        <WJ.Menu
+            Header="Format"
+            DisplayMemberPath="header"
+            SubItemsPath="items"
+            OpenOnHover="true"
+            IsAnimated="true"
+            ItemsSource="@menuData.FormatMenu"
+            ItemClicked="@MenuItemClicked"/>
+        <WJ.Menu
+            Header="Edit"
+            DisplayMemberPath="header"
+            SubItemsPath="items"
+            OpenOnHover="true"
+            IsAnimated="true"
+            ItemsSource="@menuData.EditMenu"
+            ItemClicked="@MenuItemClicked"/>
+    </div>
+</div>
+
+<h2>
+    Popups (Dialogs)
+</h2>
+<p>
+    The <b>Popup</b> control is a container that can display
+    arbitrary content in popups.
+    It supports modal and modeless popups, and allows you to
+    use "async" calls to show a popup and wait for the user
+    to close it.
+</p>
+<div class="gallery">
+    <button class="btn btn-primary" @onclick="@(() => ShowPopup(true))">
+        <WJ.Tooltip>
+            Show a modal dialog.
+        </WJ.Tooltip>
+        Modal
+    </button>
+    <button class="btn btn-primary" @onclick="@(() => ShowPopup(false))">
+        <WJ.Tooltip>
+            Show a modeless dialog.
+        </WJ.Tooltip>
+        Modeless
+    </button>
+    <button class="btn btn-primary" @onclick="@ShowPopupWithCallback">
+        <WJ.Tooltip>
+            Show a modal dialog and invoke a method when the dialog closes.
+        </WJ.Tooltip>
+        Callback
+    </button>
+    <button class="btn btn-primary" @onclick="@ShowPopupAsync">
+        <WJ.Tooltip>
+            Show a modal dialog and await for its result when the dialog closes.
+        </WJ.Tooltip>
+        Async
+    </button>
+</div>
+
+<WJ.Popup @ref="@popup" Class="dialog"
+    IsDraggable="true"
+    IsResizable="true"
+    Showing="@PopupShowing"
+    Shown="@PopupShown"
+    Hiding="@PopupHiding"
+    Hidden="@PopupHidden">
+    <LogInDialog />
+</WJ.Popup>
+
+@code {
+    WJ.Popup popup; // ref used to show the popup
+    DateTime theDate = DateTime.Now;
+    string mask = "AA-9999";
+    MenuData menuData = new MenuData();
+    CountryData[] countries;
+
+    protected override async Task OnInitAsync()
+    {
+        countries = await Http.GetJsonAsync<CountryData[]>("sample-data/countries.json");
+        menuData = await Http.GetJsonAsync<MenuData>("sample-data/menu.json");
+    }
+
+    void DateChanged(object sender)
+    {
+        var val = sender.GetType().GetProperty("Value");
+        theDate = (DateTime)val.GetValue(sender);
+        this.StateHasChanged();
+    }
+
+    void ShowPopup(bool modal)
+    {
+        popup.Show(modal);
+    }
+    void ShowPopupWithCallback()
+    {
+        popup.Show(true, result =>
+        {
+            Console.WriteLine("Popup closed with {0}", result);
+        });
+    }
+    async void ShowPopupAsync()
+    {
+        Console.WriteLine("calling ShowAsync");
+        var result = await popup.ShowAsync();
+        Console.WriteLine("Popup closed with {0}", result);
+    }
+    void PopupShowing(WJ.Popup sender, WJ.CancelEventArgs args)
+    {
+        //args.Cancel = true; //// prevent popup from showing
+        Console.WriteLine("*** Popup showing, args {0}", args);
+    }
+    void PopupShown(WJ.Popup sender)
+    {
+        Console.WriteLine("*** Popup shown");
+    }
+    void PopupHiding(WJ.Popup sender, WJ.CancelEventArgs args)
+    {
+        //args.Cancel = true; //// prevent popup from hiding
+        Console.WriteLine("*** Popup hiding with {0}, args {1}", sender.DialogResult, args);
+    }
+    void PopupHidden(WJ.Popup sender)
+    {
+        Console.WriteLine("*** Popup hidden with {0}", sender.DialogResult);
+    }
+
+    void MenuItemClicked(WJ.Menu sender)
+    {
+        // REVIEW: sender is not right (sender.ClickedItem?)
+        Console.WriteLine("Menu item clicked");
+    }
+
+    class CountryData
+    {
+        public string Country { get; set; }
+        public double Pop { get; set; }
+        public double Gdp { get; set; } // in millions
+        public double Pci { get => Gdp / Pop * 1e6; } // US$/year/capita
+    }
+
+    class MenuData
+    {
+        public MenuItem[] FileMenu { get; set; }
+        public MenuItem[] EditMenu { get; set; }
+        public MenuItem[] FormatMenu { get; set; }
+    }
+    class MenuItem
+    {
+        public string Header { get; set; }
+        public string Prop { get; set; }
+        public MenuItem[] Items { get; set; }
+    }
+}

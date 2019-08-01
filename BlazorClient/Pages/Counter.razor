@@ -1,0 +1,88 @@
+﻿@page "/counter"
+
+<h1>
+    Counter
+</h1>
+<p>
+    This page shows how you can use the <b>RadialGauge</b> and
+    <b>LinearGauge</b> components to display and edit numeric
+    values.
+</p>
+<p>
+    It also shows how you can use the <b>Tooltip</b> component
+    to add dynamic tooltips with HTML content to other components.
+</p>
+<p>
+    Current count: <b>@currentCount</b>
+</p>
+
+<button class="btn btn-primary" @onclick="@IncrementCount">
+    <WJ.Tooltip>
+        <p>
+            Increment count from <b>@currentCount</b> to <b>@(@currentCount + 1)</b>.
+        </p>
+        <p>
+            <b>NOTE:</b> this tooltip's content is <i>rich</i> and <b>dynamic</b>.
+        </p>
+    </WJ.Tooltip>
+    Increment
+</button>
+
+<div>
+    <WJ.RadialGauge 
+        Class="counter"
+        Min="0"
+        Max="100"
+        Step="1"
+        IsReadOnly="false"
+        StartAngle="-45" 
+        SweepAngle="270"
+        ShowText="WJ.ShowText.Value"
+        ShowTicks="@tickmarks"
+        ShowTickText="@tickmarks"
+        TickSpacing="10"
+        NeedleShape="WJ.NeedleShape.WidePointer"
+        NeedleLength="WJ.NeedleLength.Outer"
+        Value="@currentCount"
+        ValueChanged="@ValueChanged"
+        GotFocus="@GotFocus"/>
+    <WJ.LinearGauge
+        Class="counter"
+        Min="0"
+        Max="100"
+        IsReadOnly="false"
+        Step="1"
+        ShowText="WJ.ShowText.Value"
+        ShowTicks="@tickmarks"
+        ShowTickText="@tickmarks"
+        TickSpacing="10"
+        ThumbSize="40"
+        Value="@currentCount"
+        ValueChanged="@ValueChanged"
+        GotFocus="@GotFocus"/>
+</div>
+<p>
+    <label>
+        Show tick marks:
+        <input type="checkbox" @bind="@tickmarks"/>
+    </label>
+</p>
+
+@code {
+    int currentCount = 25;
+    bool tickmarks = true;
+
+    void IncrementCount()
+    {
+        currentCount++;
+    }
+    void ValueChanged(WJ.Gauge sender)
+    {
+        currentCount = (int)sender.Value;
+        StateHasChanged();
+    }
+    void GotFocus(WJ.Control sender)
+    {
+        Console.WriteLine("GotFocus: " + sender.GetType().ToString());
+    }
+}

@@ -1,0 +1,46 @@
+﻿@page "/chart"
+@inject HttpClient Http
+
+<h1>
+    Wijmo FlexChart
+</h1>
+
+<p>
+    This page shows a bubble chart with logarithmic axes.
+</p>
+<p>
+    The page uses simple directives to define the chart,
+    series, axes, legend, and a custom tooltip.
+</p>
+
+<WJ.FlexChart
+    Header="Population vs GDP"
+    ItemsSource="@countries"
+    ChartType="WJ.ChartType.Bubble"
+    BindingX="pop"
+    TooltipContent="&lt;b&gt;{country}&lt;/b&gt;:&lt;br/&gt;{pci:n0} US$/year/capita" >
+    <WJ.Legend Position="WJ.Position.None" />
+    <WJ.AxisX Title="Population (millions)" AxisLine="true" Format="g4,," LogBase="10" />
+    <WJ.AxisY Title="GDP (US$ billions)" Format="g4," LogBase="10" />
+    <WJ.Series Name="GDP" Binding="gdp,pci" />
+</WJ.FlexChart>
+
+@code {
+
+    CountryData[] countries;
+
+    protected override async Task OnInitAsync()
+    {
+        countries = await Http.GetJsonAsync<CountryData[]>("sample-data/countries.json");
+    }
+
+    class CountryData
+    {
+        public string Country { get; set; }
+        public double Pop { get; set; }
+        public double Gdp { get; set; } // in millions
+        public double Pci {
+            get => Gdp / Pop * 1e6; // US$/year/capita
+        }
+    }
+}

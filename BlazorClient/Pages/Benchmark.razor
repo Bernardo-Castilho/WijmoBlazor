@@ -1,0 +1,85 @@
+﻿@page "/benchmark"
+@using Microsoft.JSInterop
+@inject IJSRuntime JSRuntime
+
+<h1>
+    Benchmark
+</h1>
+<p>
+    Client-side Blazor code runs much slower than JavaScript 
+    code. This benchmark shows it is slower by a factor of 
+    10 or so.
+</p>
+<p>
+    Compare Blazor vs JavaScript performance by calculating 
+    the first @n.ToString("n0") primes:
+</p>
+<button class="btn btn-primary" @onclick="@PrimesJS">
+    <WJ.Tooltip>
+        <h1>
+            <img width="50" src="https://user-images.githubusercontent.com/14293805/36941746-0d65c6fa-1f63-11e8-8afa-ab2d28de86db.png"/>
+        </h1>
+        <p>
+            Calculate the first @n.ToString("n0") primes using <b>JavaScript</b>,
+            show the last prime and the time elapsed.
+        </p>
+    </WJ.Tooltip>
+    JavaScript
+</button>
+<button class="btn btn-primary" @onclick="@PrimesBlazor">
+    <WJ.Tooltip>
+        <h1>
+            <img width="50" src="https://devblogs.microsoft.com/aspnet/wp-content/uploads/sites/16/2019/04/BrandBlazor_big_with_border.png"/>
+        </h1>
+        <p>
+            Calculate the first @n.ToString("n0") primes using <b>Blazor</b>,
+            show the last prime and the time elapsed.
+        </p>
+    </WJ.Tooltip>
+    Blazor
+</button>
+
+<ol>
+    @foreach (var result in results)
+    {
+        <li>@result</li>
+    }
+</ol>
+
+@functions {
+    int n = 1000;
+    List<string> results = new List<string>();
+
+    void PrimesBlazor()
+    {
+        var start = DateTime.Now;
+        var primes = new List<int>();
+        var i = 3;
+        var c = 0;
+        for (var count = 2; count <= n; i++)
+        {
+            for (c = 2; c < i; c++) // check whether c is prime or not
+            {
+                if (i % c == 0)
+                {
+                    break;
+                }
+            }
+            if (c == i) // c is prime
+            {
+                primes.Add(c);
+                count++;
+            }
+        }
+        var lastPrime = primes[primes.Count - 1];
+        results.Add(string.Format("Blazor returned {0:n0} in {1:n0}ms", lastPrime, DateTime.Now.Subtract(start).TotalMilliseconds));
+    }
+    void PrimesJS()
+    {
+        // REVIEW: this seems to work:
+        // https://blog.logrocket.com/working-with-the-blazor-javascript-interop-3c2a8d0eb56c
+        var start = DateTime.Now;
+        var lastPrime = ((IJSInProcessRuntime)JSRuntime).Invoke<int>("interop.primes", n);
+        results.Add(string.Format("JavaScript returned {0:n0} in {1:n0}ms", lastPrime, DateTime.Now.Subtract(start).TotalMilliseconds));
+    }
+}
