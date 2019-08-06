@@ -10,8 +10,8 @@ using System.Threading.Tasks;
 namespace WJ
 {
     /// <summary>
-    /// Base class for controls that may contain child elements
-    /// (for example grid columns, chart series, gauge ranges).
+    /// Base class for components that wrap Wijmo objects
+    /// (controls, complex properties, tooltips, etc).
     /// </summary>
     public abstract class WijmoObject : ComponentBase, IDisposable
     {
@@ -228,18 +228,5 @@ namespace WJ
             }
             return string.Empty;
         }
-        protected string RaiseCancelableEvent<T, A>(Action<T, A> action, string args) 
-            where T : WijmoObject
-            where A : CancelEventArgs
-        {
-            if (action != null)
-            {
-                var e = JsonSerializer.Deserialize<A>(args);
-                action.Invoke(this as T, e as A);
-                return JsonSerializer.Serialize(e); // to allow canceling the event
-            }
-            return string.Empty;
-        }
-
     }
 }
