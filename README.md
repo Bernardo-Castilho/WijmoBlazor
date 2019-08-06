@@ -1,5 +1,5 @@
 # WijmoBlazor
-Wijmo 5 components for Blazor (grid, chart, gauge, inputs).
+Wijmo components for Blazor (grid, chart, gauge, inputs).
 
 [Blazor](https://docs.microsoft.com/en-us/aspnet/core/blazor)
 is Microsoft's framework for building interactive client
